@@ -1,16 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\Loki\Loki.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="LokiNet" Version="1.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <Version>1.2.0</Version>
+    <IsPackable>true</IsPackable>
+    <PackageId>LokiNet.MSSQL</PackageId>
+    <Authors>Gökhan Gökalp</Authors>
+    <Owners>Gökhan Gökalp</Owners>
+    <PackageProjectUrl>https://github.com/GokGokalp/Loki</PackageProjectUrl>
+    <Description>Loki provides an easy way to handle locking scenarios on distributed systems.</Description>
+    <Copyright>Copyright 2019 Gökhan Gökalp</Copyright>
+    <PackageTags>distributed-lock locking concurrency distributed lock</PackageTags>
   </PropertyGroup>
 
 </Project>
