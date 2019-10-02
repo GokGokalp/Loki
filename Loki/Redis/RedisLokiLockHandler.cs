@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 
 namespace Loki.Redis
@@ -9,11 +10,13 @@ namespace Loki.Redis
     {
         private static IRedisStore _redisStore;
         private static RedisValue _token;
+        private readonly ILogger<RedisLokiLockHandler> _logger;
 
-        public RedisLokiLockHandler(EndPoint[] redisEndPoints)
+        public RedisLokiLockHandler(EndPoint[] redisEndPoints, ILogger<RedisLokiLockHandler> logger)
         {
             _redisStore = RedisStore.Instance.Initialize(redisEndPoints);
             _token = Environment.MachineName;
+            _logger = logger;
         }
 
         public override bool Lock(string serviceKey, int expiryFromSeconds)
@@ -35,12 +38,13 @@ namespace Loki.Redis
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 if (SecondaryLockHandler != null)
                 {
                     isLocked = SecondaryLockHandler.Lock(serviceKey, expiryFromSeconds);
                 }
+                _logger.LogError($"There was an error while locking for service:{serviceKey}.", ex);
             }
 
             return isLocked;
@@ -57,9 +61,10 @@ namespace Loki.Redis
                     Task.Factory.StartNew(() => SecondaryLockHandler.Release(serviceKey));
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 SecondaryLockHandler?.Release(serviceKey);
+                _logger.LogError($"There was an error while locking for service:{serviceKey}.", ex);
             }
         }
     }
